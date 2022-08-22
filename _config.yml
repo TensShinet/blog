@@ -3,11 +3,11 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
+title: Tan Shun's Blog
 subtitle: ''
 description: ''
 keywords:
-author: John Doe
+author: Tan Shun
 language: en
 timezone: ''
 
@@ -98,7 +98,6 @@ ignore:
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
 theme: next
-
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
