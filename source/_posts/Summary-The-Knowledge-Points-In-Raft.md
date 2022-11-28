@@ -177,23 +177,24 @@ typora-root-url: ./Summary-The-Knowledge-Points-In-Raft
 
 
 
-
-
 ### 如何实现 Replace Server
 
 
 
+### Snapshot 要持久化哪些状态
 
 
 
+### 什么时候 Snapshot
 
 
 
+### 如何减轻 Snapshot 对 Client Performance 的影响
 
 
 
-
-
+1. 使用多设备
+2. the minority of snapshotting servers
 
 
 
