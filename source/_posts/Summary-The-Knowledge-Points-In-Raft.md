@@ -74,6 +74,20 @@ typora-root-url: ./Summary-The-Knowledge-Points-In-Raft
 
 
 
++ 第一种情况：Receiver 的任期等于 Sender 的任期，并且 Receiver 给 Sender 投过票，并且 Receiver 的 Log 小于等于 Sender 的 Log。
++ 第二种情况：Receiver 的任期小于 Sender 的任期，并且 Receiver 在此任期没有投过票，并且  Receiver 的 Log 小于等于 Sender 的 Log。
+
+
+
+日志判断大小的依据：
+
+
+
++ Log 的 Term 大，日志大
++ Log Term 相同的情况下，Index 越高越大
+
+
+
 ### Leader 为什么不能提交之前任期的日志
 
 
@@ -106,7 +120,7 @@ typora-root-url: ./Summary-The-Knowledge-Points-In-Raft
 
 
 
-虽然任期和日志都是和时间无关的，但是这个系统想要稳定的持续下去，不可避免的依赖真实的系统时间。
+虽然任期和日志都是 和时间无关的，但是这个系统想要稳定的持续下去，不可避免的依赖真实的系统时间。
 
 
 
@@ -123,13 +137,11 @@ typora-root-url: ./Summary-The-Knowledge-Points-In-Raft
 
 
 
-
-
 具体含义如下：
 
 
 
-+ **broadcastTime << electionTimeout**
++ **broadcast time << electionTimeout**
 
 
 
@@ -149,11 +161,37 @@ typora-root-url: ./Summary-The-Knowledge-Points-In-Raft
 
 
 
+Leader Server 不可避免的可能需要将 Leader 权限主动转移到其他 Server。所以在协议中涉及 Leader Transefer    。具体步骤如下：
+
+
+
++ Leader Server 接受到 Leader Transefer 以后，不再接受后面的 Client 的请求。
++ 向目标 Server 发送日志，直到目标 Server 和自己的日志一样新。
++ 给目标 Server 发送 Timeout 的请求。
+
+
+
+这样目标 Server 就会立即选举超时，立即成为 Candidate，拥有比 Leader Server 更高的 Term。Leader Server 接受到目标 Server 的 RequestVote 的时候就会退化成 Follower。这样就完成了 Leader Transefer。
+
+
+
+当然目标 Server 也可能挂掉，所以为了保持可用性（不可用的时间 <= 选举时间），当 Leader Server 在一个选举时间内，发现没有完成 Leader Transefer，会停掉 Leader Transefer，再次接受 Client 的请求。
+
+
+
 ### Cluster Membership Changes 全过程
 
 
 
-### 为什么单步
+分布式系统中成员的变更是不可避免的。如何在成员变更的时候保证顺序一致性，又是一个新的挑战。在 Raft 中，推荐使用**单步变更**。
+
+
+
+**单步变更**指的是每次只添加或者删除一个 Server。使用**单步变更**的原因在于：**不论是添加还是删除，旧集群的 majority 和新集群的 majority 一定会发生重叠。**这样就保证了 Cluster Membership Changes 的安全性。
+
+
+
++ 
 
 
 
@@ -202,7 +240,19 @@ typora-root-url: ./Summary-The-Knowledge-Points-In-Raft
 
 
 
+### 有哪些性能可以优化的地方
 
+
+
+
+
+## MultiRaft 方案
+
+
+
+
+
+## ETCD/Raft 优化的地方
 
 
 
