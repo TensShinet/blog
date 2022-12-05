@@ -191,11 +191,13 @@ Leader Server 不可避免的可能需要将 Leader 权限主动转移到其他 
 
 
 
-+ 
-
-
-
-### 什么时候可以使用新的 Membership Config
++ Leader Server 收到 Cluster Membership Changes Request
++ 等待上一次  Cluster Membership Changes 结束
++ 将 Cluster Membership Changes Append 到日志中
++ **更改当前 Leader 的 Membership（不需要 commit）**
++ 将日志同步给其他 Server
++ 当其他 Server Append 到 log 后，修改自己的 Membership
++ 当这个 Cluster Membership Changes 提交以后，本次 Membership Changes 结束
 
 
 
@@ -203,7 +205,51 @@ Leader Server 不可避免的可能需要将 Leader 权限主动转移到其他 
 
 
 
+以下两种情况都会引入集群可用性问题：
+
+
+
+![image-20221205134746973](/image-20221205134746973.png)
+
+
+
++ 当加入新的 Node S4 以后，由于 S4 没有任何日志，如果 S3 挂掉了，集群中的请求没办法很快达到大多数，这样就新增了可用性的问题
+
+
+
+![image-20221205135407856](/image-20221205135407856.png)
+
+
+
++ 当快速加入新的 Server 以后，由于 S4，S5，S6 没有日志，集群中的请求没办法很快达到大多数，这样同样新增了可用性的问题
+
+
+
+解决办法如下：
+
+
+
+加入新 Node 的时候不直接参与投票，而是以一种 **Leaner** 的身份加入集群，然后在**合适的时候**（日志同步的差不多了）再转换身份可以参与投票。
+
+
+
+选择**合适的时候**的方法如下：
+
+
+
+![image-20221205161635925](/image-20221205161635925.png)
+
+
+
+如图所示，日志同步其实是多个 round 同步的过程。原因是在同步的过程中也会产生新的日志。只要上一个 round 的同步时间小于选举时间就是一个把新 Node 加入集群参与投票的合适时间。
+
+
+
 ### 删除的 Node 是 Leader 怎么办
+
+
+
+
 
 
 
@@ -246,13 +292,13 @@ Leader Server 不可避免的可能需要将 Leader 权限主动转移到其他 
 
 
 
-## MultiRaft 方案
+## MultiRaft 方案总结
 
 
 
 
 
-## ETCD/Raft 优化的地方
+## ETCD/Raft 优化总结
 
 
 
