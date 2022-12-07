@@ -249,7 +249,24 @@ Leader Server 不可避免的可能需要将 Leader 权限主动转移到其他 
 
 
 
+由于删除的 Node 是 Leader，所以会导致不可用一段时间。Raft 中提出了这样的删除 Leader 的一种方法：
 
+
+
++ Leader 收到删除自己的 Request 以后，还做 Leader 同步一段时间
++ 并且在计算 commit 的时候不算自己的票
++ 一旦 commit，自己 step down
+
+
+
+举一个极端的例子来分析这样是可行的。假设集群中只存在两个 Server：S1 和 S2，并且 S1 是 Leader。现在要删除 S1。流程如下：
+
+
+
++ S1 收到删除自己的 Request 以后，从成员中将自己删除，但是还做 Leader 给 S2 同步
++ S2 收到 S1 的请求以后，从成员中将 S1 删除，发送消息给 S1
++ S1 收到 S2 的 Response 以后，此时 1 为大多数，满足大多数，提交，S1 step down
++ S2 没收到 S1 的 Heartbeat，S2 超时，自己做 Leader
 
 
 
@@ -257,11 +274,23 @@ Leader Server 不可避免的可能需要将 Leader 权限主动转移到其他 
 
 
 
+当删除的 Server 不是 Leader 的时候，那个 Server 将不再收到来自 Leader 的心跳。所以会自增 Term 给其他的 Server 发送 RequestVote。导致 Leader 收到比自己大的 Term，变成 Follower。这样会影响可用性。
+
+
+
+解决这种情况有一个朴素的方案：Pre-Vote。
+
+
+
+就是在发起 RequestVote 之前，先预投票一轮，看自己能不能当上 Leader（任期大不大，日志够不够新），如果不能也就没有必要发送 RequestVote 了。
+
+
+
 ### 什么情况下 Pre-Vote 没有作用
 
 
 
-### 如何实现 Replace Server
+### 为什么需要 Snapshot
 
 
 
