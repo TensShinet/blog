@@ -69,6 +69,31 @@ In addition, Snapshot Isolation also proposes **a way to prevent lost updates**.
 
 
 
+However, Snapshot Isolation is not a serializable isolation level. It cannot solve a **Write Skew** issue that never happens in serializable transactions. For example, if we have a table in which Key a equals six and Key b equals five, and we have a constraint: a >= b.
+
+
+
+| Key  | Value |
+| ---- | ----- |
+| a    | 6     |
+| b    | 5     |
+
+
+
+There are two concurrent transactions, T1 and T2. They both read Key a equals six, and Key b equals five. T1 reads Key a equals six, subtracting one from a, and gets five. T1 still meets the constraint: a >= b, and T1 commits. At the same time, T2 reads Key b equals five, adding one to b, and gets six. T2 also meets the constraint: a >= b, and T2 commits. But now, this table is changed and not meets the constraint: a >= b, which never happens in serializable transactions(T1 or T2 will abort because it doesn't meet constraint: a >= b). 
+
+
+
+| Key  | Value |
+| ---- | ----- |
+| a    | 5     |
+| b    | 6     |
+
+
+
+
+
+
 Summarize Snapshot Isolation:
 
 
@@ -76,6 +101,7 @@ Summarize Snapshot Isolation:
 + Each transaction has an execution interval: [Start Timestamp, Commit Timestamp] and only reads the data committed before its Start Timestamp.
 + All timestamps grow monotonously.
 + Transaction T1 will successfully commit only if no other transaction T2 with a Commit Timestamp in T1's execution interval wrote data that T1 also wrote.
++ Snapshot Isolation can't solve a **Write Skew** issue.
 
 
 
@@ -94,6 +120,10 @@ The next part will use a c++ code to explain how Percolator implements Snapshot 
 
 
 ## Implementation
+
+
+
+
 
 
 
