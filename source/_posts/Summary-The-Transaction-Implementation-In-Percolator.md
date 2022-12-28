@@ -19,8 +19,8 @@ According to that paper, I will introduce how Percolator implements **Snapshot-I
 
 
 + Background: Introduce BigTable and Snapshot Isolation.
-+ Implementation: Use a c++ code in that paper to explain how Percolator implements Snapshot Isolation via BigTable.
-+ Example: Use a concrete example in that paper to introduce this algorithm's workflow.
++ Implementation: Use a c++ code from that paper to explain how Percolator implements Snapshot Isolation via BigTable.
++ Example: Use a concrete example from that paper to introduce this algorithm's workflow.
 + Safety Argument: Discuss what will happen if a Percolator client crashes and how to recover.
 + Interview Questions: Summarize the frequent interview questions about Percolator Transaction.
 
@@ -120,7 +120,6 @@ The next part will use a c++ code to explain how Percolator implements Snapshot 
 
 
 ## Implementation
-
 
 
 
