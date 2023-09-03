@@ -50,8 +50,8 @@ Here are the best practices:
 
    We should ensure that we're solving the right problem. Often, it helps to divide the requirements into two groups:
 
-   	1. Requirements that the clients need directly.
-   	1. Requirements that are needed indirectly.
+   1. Requirements that the clients need directly.
+   2. Requirements that are needed indirectly.
 
 2. Handle data
 
@@ -91,7 +91,7 @@ Here are the best practices:
 
 
 
-When the procedure execution finishes, the results are returned to the calling environment where the excursion restarts as a regular procedure call.
+When the procedure execution finishes, the results are returned to the calling environment, where the excursion restarts as a regular procedure call.
 
 
 
@@ -138,23 +138,89 @@ The causal consistency model is used in a commenting system. For example, for th
 
 This model ensures that a read request from any replicas will get the latest write value. Once the client acknowledges that the write operation has been performed, other clients can see that value.
 
-Updating an account's password requires linearizability consistency. For example, if I change my bank password and the attacker cannot use a stale password to login in my account.
+Updating an account's password requires linearizability consistency. For example, if I change my bank password, the attacker cannot use a stale password to log in to my account.
+
+
+
+### What are the categories related to failure?
+
+
+
++ Fail-stop
+
++ Crash
+
++ Omission Failures
+
+  In **omission failures**, the node fails to send or receive messages. There are two types of omission failures: **send omission failure** and **receive omission failure**.
+
++ Temporal Failures
+
+  The node generates correct results in temporal failures, but it is too late to be useful.
+
++ Byzantine Failures
+
+  In **byzantine failures**, the node exhibits **arbitrary** behavior, like transmitting random messages at arbitrary times.
+
+
+
+### How do we measure the availability?
+
+
+
+The availability in percent is `(Total Time - Amount of Time Service was Down/Total Time) * 100`.
+
+
+
+| Availability Percentages versus Service Downtime |                       |                        |                       |
+| ------------------------------------------------ | --------------------- | ---------------------- | --------------------- |
+| **Availability %**                               | **Downtime per Year** | **Downtime per Month** | **Downtime per Week** |
+| 90% (1 nine)                                     | 36.5 days             | 72 hours               | 16.8 hours            |
+| 99% (2 nines)                                    | 3.65 days             | 7.20 hours             | 1.68 hours            |
+| 99.5% (2 nines)                                  | 1.83 days             | 3.60 hours             | 50.4 minutes          |
+| 99.9% (3 nines)                                  | 8.76 hours            | 43.8 minutes           | 10.1 minutes          |
+| 99.99% (4 nines)                                 | 52.56 minutes         | 4.32 minutes           | 1.01 minutes          |
+| 99.999% (5 nines)                                | 5.26 minutes          | 25.9 seconds           | 6.05 seconds          |
+| 99.9999% (6 nines)                               | 31.5 seconds          | 2.59 seconds           | 0.605 seconds         |
+| 99.99999% (7 nines)                              | 3.15 seconds          | 0.259 seconds          | 0.0605 seconds        |
+
+
+
+### How do we measure the reliability?
+
+
+
+We often use the **mean time between failures(MTBF)** and the **mean time to repair(MTTR)** to measure reliability.
+
+
+
++ MTBF: `(Total Elapsed Time - Sum of Downtime)/Total Number of Failures`.
++ MTTR: `Total Maintenance Time/Total Number of Repairs`.
 
 
 
 
 
+### What are the scalability approaches?
 
 
 
-
-
++ Vertical scalability—scaling up
++ Horizontal scalability—scaling out
 
 
 
  
 
+### How do we measure the maintainability?
 
+
+
+We use the **mean time to repair(MTTR)** to measure maintainability.
+
+
+
++ MTTR: `Total Maintenance Time/Total Number of Repairs`
 
 
 
